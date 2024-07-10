@@ -1,6 +1,25 @@
 .App {
   text-align: center;
 }
+body {
+  font-family: 'Pretendard';
+}
+.black-nav {
+  background: black;
+  width: 100%;
+  display: flex;
+  color: white;
+  padding: 20px;
+  font-weight: 600;
+  font-size: 20px;
+  box-sizing: border-box;
+}
+.list {
+  margin-top: 30px;
+  text-align: left;
+  padding-left: 20px;
+  padding-right: 20px;
+}
 
 .App-logo {
   height: 40vmin;
