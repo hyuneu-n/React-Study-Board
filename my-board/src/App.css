@@ -26,6 +26,12 @@ body {
   pointer-events: none;
 }
 
+.footer {
+  background-color: darkgray;
+  color: white;
+  padding: 10px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
