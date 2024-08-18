@@ -40,3 +40,65 @@
 .read-the-docs {
   color: #888;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Pretendard&display=swap');
+
+body {
+  font-family: 'Pretendard', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #111;
+}
+
+.main-page {
+  text-align: center;
+}
+
+.animate-title {
+  font-size: 6rem;
+  color: white;
+  letter-spacing: 0.2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-100%);
+  animation: bounceIn 0.6s forwards;
+}
+
+.letter:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.letter:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.letter:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.letter:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(30%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}

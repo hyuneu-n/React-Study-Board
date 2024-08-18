@@ -1,34 +1,43 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PropTypes from "prop-types";
 import TextInput from "../components/TextInput";
 import Button from "../ui/Button";
 
 function PostWritePage() {
   const navigate = useNavigate();
-  const { category: initialCategory } = useParams();
+  const { category: initialCategory } = useParams(); 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState(initialCategory || "shopping");
+  const [category, setCategory] = useState(initialCategory || "thread"); 
 
   const savePost = () => {
-    const newPost = { id: Date.now(), title, content, category, comments: [] };
+    const currentDate = new Date().toLocaleDateString(); // 현재 날짜를 문자열로 포맷
+    const newPost = { 
+      id: Date.now(), 
+      title, 
+      content, 
+      category, 
+      date: currentDate, // 작성일 추가
+      comments: [] 
+    };
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
     savedPosts.push(newPost);
     localStorage.setItem("posts", JSON.stringify(savedPosts));
-    navigate(`/${category}`);
+    navigate(`/${category}`); 
   };
 
   return (
     <div className="container mt-4">
       <div className="mb-3">
+        <label htmlFor="categorySelect" className="form-label">게시판 선택</label>
         <select
+          id="categorySelect"
+          className="form-select"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="form-select"
         >
-          <option value="shopping">쇼핑 게시판</option>
-          <option value="free">자유 게시판</option>
+          <option value="thread">Thread</option>
+          <option value="qna">QnA</option>
         </select>
       </div>
       <TextInput
@@ -45,9 +54,5 @@ function PostWritePage() {
     </div>
   );
 }
-
-PostWritePage.propTypes = {
-  category: PropTypes.string,
-};
 
 export default PostWritePage;

@@ -1,4 +1,3 @@
-// Navbar.jsx
 import { Link } from "react-router-dom";
 
 function Navbar() {
@@ -9,10 +8,13 @@ function Navbar() {
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/shopping">쇼핑 게시판</Link>
+              <Link className="nav-link" to="/thread">Thread</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/free">자유 게시판</Link>
+              <Link className="nav-link" to="/qna">QnA</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/post-write/thread">Post</Link>
             </li>
           </ul>
         </div>

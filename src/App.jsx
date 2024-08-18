@@ -10,14 +10,19 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <div className="text-center mt-8">
-        <h1 className="text-4xl font-bold text-gray-800">블로그</h1>
+      <div className="text-center mt-10">
+        <h1 
+          className="animate__animated animate__bounce" 
+          style={{ fontFamily: 'Pretendard, sans-serif', padding: '20px 0' }}
+        >
+          BLOG
+        </h1>
       </div>
       <div className="pb-20 pt-8 bg-gray-50 min-h-screen">
         <Routes>
           <Route index element={<MainPage />} />
-          <Route path="shopping" element={<PostListPage category="shopping" />} />
-          <Route path="free" element={<PostListPage category="free" />} />
+          <Route path="thread" element={<PostListPage category="thread" />} />
+          <Route path="qna" element={<PostListPage category="qna" />} />
           <Route path="post-write/:category" element={<PostWritePage />} />
           <Route path="post/:postId" element={<PostViewPage />} />
         </Routes>

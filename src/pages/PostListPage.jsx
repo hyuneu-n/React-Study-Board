@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import Button from "../ui/Button";
 
 function PostListPage({ category }) {
   const navigate = useNavigate();
@@ -9,39 +8,35 @@ function PostListPage({ category }) {
 
   useEffect(() => {
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
-    if (category === "all") {
-      setPosts(savedPosts);
-    } else {
-      const filteredPosts = savedPosts.filter((post) => post.category === category);
-      setPosts(filteredPosts);
-    }
+    const filteredPosts = savedPosts.filter((post) => post.category === category);
+    setPosts(filteredPosts);
   }, [category]);
-
-  const handleDelete = (postId) => {
-    const updatedPosts = posts.filter((post) => post.id !== postId);
-    setPosts(updatedPosts);
-    localStorage.setItem("posts", JSON.stringify(updatedPosts));
-  };
 
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between mb-3">
-        <Button title="쇼핑 게시판" onClick={() => navigate("/shopping")} />
-        <Button title="자유 게시판" onClick={() => navigate("/free")} />
-        <Button title="글쓰기" variant="success" onClick={() => navigate(`/post-write/${category}`)} />
+        <button className="btn btn-primary" onClick={() => navigate("/thread")}>Thread</button>
+        <button className="btn btn-primary" onClick={() => navigate("/qna")}>QnA</button>
+        <button className="btn btn-success" onClick={() => navigate(`/post-write/${category}`)}>Post</button>
       </div>
-      <div className="row">
-        {posts.map((post) => (
-          <div key={post.id} className="col-md-4">
-            <div className="card mb-4">
-              <div className="card-body">
-                <h5 className="card-title">{post.title}</h5>
-                <Button title="삭제하기" variant="danger" onClick={() => handleDelete(post.id)} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <table className="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">제목</th>
+            <th scope="col">작성일</th>
+          </tr>
+        </thead>
+        <tbody>
+          {posts.map((post, index) => (
+            <tr key={post.id} onClick={() => navigate(`/post/${post.id}`)} style={{ cursor: 'pointer' }}>
+              <th scope="row">{index + 1}</th>
+              <td>{post.title}</td>
+              <td>{post.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

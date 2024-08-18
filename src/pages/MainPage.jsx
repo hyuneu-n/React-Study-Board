@@ -5,14 +5,14 @@ function MainPage() {
 
   return (
     <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
-      <button className="btn btn-primary my-2" onClick={() => navigate("/shopping")}>
-        쇼핑 게시판
+      <button className="btn btn-primary my-2" onClick={() => navigate("/thread")}>
+        Thread
       </button>
-      <button className="btn btn-primary my-2" onClick={() => navigate("/free")}>
-        자유 게시판
+      <button className="btn btn-primary my-2" onClick={() => navigate("/qna")}>
+        QnA
       </button>
-      <button className="btn btn-success my-2" onClick={() => navigate("/post-write/shopping")}>
-        글쓰기
+      <button className="btn btn-success my-2" onClick={() => navigate("/post-write/threads")}>
+        Post
       </button>
     </div>
   );
