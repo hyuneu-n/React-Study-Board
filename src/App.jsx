@@ -10,15 +10,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <div className="text-center mt-10">
-        <h1 
-          className="animate__animated animate__bounce" 
-          style={{ fontFamily: 'Pretendard, sans-serif', padding: '20px 0' }}
-        >
-          BLOG
-        </h1>
-      </div>
-      <div className="pb-20 pt-8 bg-gray-50 min-h-screen">
+      <div style={{ marginTop: '100px' }}> {/* 네비게이션 바 아래 마진 추가 */}
         <Routes>
           <Route index element={<MainPage />} />
           <Route path="thread" element={<PostListPage category="thread" />} />
