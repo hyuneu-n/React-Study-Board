@@ -8,8 +8,11 @@ import PostListPage from './pages/PostListPage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
+  // Vite 환경 변수를 사용하는 방식으로 변경
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   return (
-    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={clientId}>
       <BrowserRouter>
         <RouterWrapper />
       </BrowserRouter>
