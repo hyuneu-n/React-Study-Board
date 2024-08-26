@@ -50,8 +50,7 @@ function PostWritePage() {
         content, 
         category, 
         date: currentDate, 
-        author: user.name || user.email, // 작성자 정보 추가
-        authorEmail: user.email,  // 작성자 이메일 추가
+        author: user.email,
         comments: [] 
       };
       savedPosts.push(newPost);

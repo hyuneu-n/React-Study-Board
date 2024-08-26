@@ -11,7 +11,6 @@ function Navbar() {
       const jwtDecode = (await import('jwt-decode')).default;  // dynamic import 사용
       const decoded = jwtDecode(token);  // jwtDecode 함수 사용
       localStorage.setItem("user", JSON.stringify({
-        name: decoded.name || decoded.email,  // 사용자 이름 또는 이메일 저장
         email: decoded.email,
       }));
 

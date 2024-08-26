@@ -36,8 +36,7 @@ function PostViewPage() {
       id: Date.now(),
       content: commentText,
       date: new Date().toLocaleString(),
-      author: user.name || user.email, // 작성자 정보 추가
-      authorEmail: user.email,  // 작성자 이메일 추가
+      author: user.email, // 작성자 정보에 이메일 추가
     };
 
     const updatedPost = {
@@ -89,7 +88,7 @@ function PostViewPage() {
           <p>{post.content}</p>
           <p className="text-muted">{post.date}</p>
           <p className="text-muted">작성자: {post.author}</p>
-          {user && user.email === post.authorEmail && (
+          {user && user.email === post.author && (
             <div className="d-flex justify-content-end">
               <Button variant="warning" style={{ marginRight: "10px" }} onClick={() => navigate(`/post-write/${post.category}?edit=${postId}`)}>
                 수정하기
