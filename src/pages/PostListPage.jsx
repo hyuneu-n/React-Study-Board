@@ -1,19 +1,24 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, Pagination } from 'react-bootstrap';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Button, Pagination } from "react-bootstrap";
+import { setSearchTerm } from "../store";
 
 function PostListPage({ category }) {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
+  const posts = useSelector((state) =>
+    state.posts.items.filter(
+      (post) =>
+        post.category === category &&
+        (post.title.includes(state.posts.searchTerm) ||
+          post.content.includes(state.posts.searchTerm))
+    )
+  );
+  const searchTerm = useSelector((state) => state.posts.searchTerm);
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 5;
-
-  useEffect(() => {
-    const savedPosts = JSON.parse(localStorage.getItem('posts')) || [];
-    const filteredPosts = savedPosts.filter(post => post.category === category);
-    setPosts(filteredPosts);
-  }, [category]);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -22,14 +27,26 @@ function PostListPage({ category }) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleSearchChange = (e) => {
+    dispatch(setSearchTerm(e.target.value));
+    setCurrentPage(1);
+  };
+
   return (
-    <div className="container mt-4" style={{ fontFamily: 'Pretendard, sans-serif' }}>
+    <div className="container mt-4">
       <div className="d-flex justify-content-between mb-3">
         <h2 className="fw-bold">{category.toUpperCase()}</h2>
         <Button className="btn btn-success" onClick={() => navigate(`/post-write/${category}`)}>
           Post
         </Button>
       </div>
+      <input
+        type="text"
+        placeholder="검색어를 입력하세요..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="form-control mb-3"
+      />
       <table className="table">
         <thead>
           <tr>

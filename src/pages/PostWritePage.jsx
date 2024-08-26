@@ -1,26 +1,29 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import TextInput from "../components/TextInput";
 import Button from "../ui/Button";
+import { addPost, updatePost } from "../store";
 
 function PostWritePage() {
   const navigate = useNavigate();
-  const { category: initialCategory } = useParams(); 
+  const dispatch = useDispatch();
+  const { category: initialCategory } = useParams();
   const location = useLocation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState(initialCategory || "thread"); 
+  const [category, setCategory] = useState(initialCategory || "thread");
   const [isEditing, setIsEditing] = useState(false);
   const [postId, setPostId] = useState(null);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const editPostId = queryParams.get("edit");
-    
+
     if (editPostId) {
       const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
       const postToEdit = savedPosts.find((post) => post.id === Number(editPostId));
-      
+
       if (postToEdit) {
         setTitle(postToEdit.title);
         setContent(postToEdit.content);
@@ -32,30 +35,32 @@ function PostWritePage() {
   }, [location.search]);
 
   const savePost = () => {
-    const currentDate = new Date().toLocaleDateString(); // 현재 날짜를 문자열로 포맷
+    const currentDate = new Date().toLocaleDateString();
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
     if (isEditing) {
-      const updatedPosts = savedPosts.map((post) =>
-        post.id === postId
-          ? { ...post, title, content, category, date: currentDate }
-          : post
-      );
-      localStorage.setItem("posts", JSON.stringify(updatedPosts));
-    } else {
-      const newPost = { 
-        id: Date.now(), 
-        title, 
-        content, 
-        category, 
-        date: currentDate, // 작성일 추가
-        comments: [] 
+      const updatedPost = {
+        id: postId,
+        title,
+        content,
+        category,
+        date: currentDate,
+        comments: savedPosts.find((post) => post.id === postId).comments,
       };
-      savedPosts.push(newPost);
-      localStorage.setItem("posts", JSON.stringify(savedPosts));
+      dispatch(updatePost(updatedPost));
+    } else {
+      const newPost = {
+        id: Date.now(),
+        title,
+        content,
+        category,
+        date: currentDate,
+        comments: [],
+      };
+      dispatch(addPost(newPost));
     }
-    
-    navigate(`/${category}`); 
+
+    navigate(`/${category}`);
   };
 
   return (
@@ -67,7 +72,7 @@ function PostWritePage() {
           className="form-select"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          disabled={isEditing} // 수정 모드일 때 게시판 선택 비활성화
+          disabled={isEditing}
         >
           <option value="thread">Thread</option>
           <option value="qna">QnA</option>

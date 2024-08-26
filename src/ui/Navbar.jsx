@@ -11,13 +11,11 @@ function Navbar() {
       const { default: jwtDecode } = await import('jwt-decode');
       const decoded = jwtDecode(token);
 
-      // 사용자 정보를 로컬 스토리지 또는 상태 관리에 저장
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(decoded));
 
       console.log("구글 로그인 성공:", decoded);
 
-      // 로그인 성공 후 리다이렉트할 페이지로 이동
       navigate("/thread");
     } catch (error) {
       console.error("JWT 디코딩 중 오류 발생:", error);

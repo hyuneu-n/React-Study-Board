@@ -8,7 +8,7 @@ function PostListItem({ post, onClick, onDelete }) {
         <button
           className="btn btn-danger mt-3"
           onClick={(e) => {
-            e.stopPropagation(); // 클릭 이벤트가 부모로 전파되는 것을 막음
+            e.stopPropagation();
             onDelete(post.id);
           }}
         >

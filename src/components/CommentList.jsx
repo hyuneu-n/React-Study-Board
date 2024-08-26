@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import CommentListItem from "./CommentListItem";
 
-function CommentList({ comments, onDelete }) {  // onDelete prop 추가
+function CommentList({ comments, onDelete }) {  
     const [currentPage, setCurrentPage] = useState(1);
     const [commentsPerPage] = useState(3);
 
@@ -44,7 +44,7 @@ CommentList.propTypes = {
             content: PropTypes.string.isRequired,
         })
     ).isRequired,
-    onDelete: PropTypes.func.isRequired,  // onDelete prop validation 추가
+    onDelete: PropTypes.func.isRequired, 
 };
 
 export default CommentList;

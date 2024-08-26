@@ -1,24 +1,21 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
 import CommentList from "../components/CommentList";
+import { deletePost, updatePost } from "../store";
 
 function PostViewPage() {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const [post, setPost] = useState(null);
+  const dispatch = useDispatch();
+  const post = useSelector((state) =>
+    state.posts.items.find((item) => item.id === Number(postId))
+  );
   const [commentText, setCommentText] = useState("");
 
-  useEffect(() => {
-    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
-    const foundPost = savedPosts.find((item) => item.id === Number(postId));
-    setPost(foundPost);
-  }, [postId]);
-
   const handleDelete = () => {
-    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
-    const updatedPosts = savedPosts.filter((item) => item.id !== Number(postId));
-    localStorage.setItem("posts", JSON.stringify(updatedPosts));
+    dispatch(deletePost(Number(postId)));
     navigate(-1);
   };
 
@@ -28,6 +25,7 @@ function PostViewPage() {
     const newComment = {
       id: Date.now(),
       content: commentText,
+      date: `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, // 초를 제외한 날짜와 시간 추가
     };
 
     const updatedPost = {
@@ -35,14 +33,17 @@ function PostViewPage() {
       comments: [...post.comments, newComment],
     };
 
-    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
-    const updatedPosts = savedPosts.map((p) =>
-      p.id === updatedPost.id ? updatedPost : p
-    );
-
-    localStorage.setItem("posts", JSON.stringify(updatedPosts));
-    setPost(updatedPost);
+    dispatch(updatePost(updatedPost));
     setCommentText("");
+  };
+
+  const handleDeleteComment = (commentId) => {
+    const updatedPost = {
+      ...post,
+      comments: post.comments.filter(comment => comment.id !== commentId),
+    };
+
+    dispatch(updatePost(updatedPost));
   };
 
   if (!post) return <p>Loading...</p>;
@@ -54,9 +55,9 @@ function PostViewPage() {
       </Button>
       <div className="card">
         <div className="card-body">
-          <h3 style={{ fontWeight: "bold", fontFamily: 'Pretendard, sans-serif' }}>{post.title}</h3>
+          <h3 style={{ fontWeight: "bold" }}>{post.title}</h3>
           <p>{post.content}</p>
-          <p className="text-muted" style={{ color: '#6c757d' }}>{post.date}</p>
+          <p className="text-muted">{post.date}</p>
           <div className="d-flex justify-content-end">
             <Button variant="warning" style={{ marginRight: "10px" }} onClick={() => navigate(`/post-write/${post.category}?edit=${postId}`)}>
               수정하기
@@ -78,7 +79,7 @@ function PostViewPage() {
         />
         <Button variant="primary" onClick={handleAddComment}>댓글 작성하기</Button>
       </div>
-      <CommentList comments={post.comments} />
+      <CommentList comments={post.comments} onDelete={handleDeleteComment} />
     </div>
   );
 }

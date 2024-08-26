@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import PropTypes from "prop-types"; // PropTypes를 import합니다.
+import PropTypes from "prop-types";
 
 function PostModal({ show, handleClose, handleSave }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('thread'); // 기본값은 'thread'로 설정
+  const [category, setCategory] = useState('thread');
 
   const onSave = () => {
     handleSave({ title, content, category });
@@ -61,7 +61,6 @@ function PostModal({ show, handleClose, handleSave }) {
   );
 }
 
-// PropTypes 정의
 PostModal.propTypes = {
   show: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
