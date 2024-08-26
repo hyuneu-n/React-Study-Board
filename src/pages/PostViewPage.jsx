@@ -1,31 +1,42 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { Button } from "react-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
 import CommentList from "../components/CommentList";
-import { deletePost, updatePost } from "../store";
+import { Button } from "react-bootstrap";
 
 function PostViewPage() {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const post = useSelector((state) =>
-    state.posts.items.find((item) => item.id === Number(postId))
-  );
+  const [post, setPost] = useState(null);
   const [commentText, setCommentText] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleDelete = () => {
-    dispatch(deletePost(Number(postId)));
-    navigate(-1);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+    }
+
+    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+    const foundPost = savedPosts.find((item) => item.id === Number(postId));
+    setPost(foundPost);
+  }, [postId]);
 
   const handleAddComment = () => {
+    if (!isAuthenticated) {
+      alert("로그인 후 댓글을 작성할 수 있습니다.");
+      navigate("/login");
+      return;
+    }
+
     if (commentText.trim() === "") return;
+
+    const user = JSON.parse(localStorage.getItem("user")); // 사용자 정보 가져오기
 
     const newComment = {
       id: Date.now(),
       content: commentText,
-      date: `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, // 초를 제외한 날짜와 시간 추가
+      date: new Date().toLocaleString(),
+      author: user.name || user.email, // 작성자 정보 추가
     };
 
     const updatedPost = {
@@ -33,17 +44,28 @@ function PostViewPage() {
       comments: [...post.comments, newComment],
     };
 
-    dispatch(updatePost(updatedPost));
+    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+    const updatedPosts = savedPosts.map((p) =>
+      p.id === updatedPost.id ? updatedPost : p
+    );
+
+    localStorage.setItem("posts", JSON.stringify(updatedPosts));
+    setPost(updatedPost);
     setCommentText("");
   };
 
   const handleDeleteComment = (commentId) => {
-    const updatedPost = {
-      ...post,
-      comments: post.comments.filter(comment => comment.id !== commentId),
-    };
+    const updatedComments = post.comments.filter(comment => comment.id !== commentId);
+    const updatedPost = { ...post, comments: updatedComments };
 
-    dispatch(updatePost(updatedPost));
+    // 로컬 스토리지 업데이트
+    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+    const updatedPosts = savedPosts.map((p) =>
+      p.id === updatedPost.id ? updatedPost : p
+    );
+
+    localStorage.setItem("posts", JSON.stringify(updatedPosts));
+    setPost(updatedPost);
   };
 
   if (!post) return <p>Loading...</p>;
@@ -58,14 +80,7 @@ function PostViewPage() {
           <h3 style={{ fontWeight: "bold" }}>{post.title}</h3>
           <p>{post.content}</p>
           <p className="text-muted">{post.date}</p>
-          <div className="d-flex justify-content-end">
-            <Button variant="warning" style={{ marginRight: "10px" }} onClick={() => navigate(`/post-write/${post.category}?edit=${postId}`)}>
-              수정하기
-            </Button>
-            <Button variant="danger" onClick={handleDelete}>
-              삭제하기
-            </Button>
-          </div>
+          <p className="text-muted">작성자: {post.author}</p> {/* 작성자 표시 */}
         </div>
       </div>
       <div className="mt-4">
@@ -76,8 +91,15 @@ function PostViewPage() {
           placeholder="댓글을 입력하세요"
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
+          disabled={!isAuthenticated}
         />
-        <Button variant="primary" onClick={handleAddComment}>댓글 작성하기</Button>
+        <Button
+          variant="primary"
+          onClick={handleAddComment}
+          disabled={!isAuthenticated}
+        >
+          댓글 작성하기
+        </Button>
       </div>
       <CommentList comments={post.comments} onDelete={handleDeleteComment} />
     </div>

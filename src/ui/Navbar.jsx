@@ -8,9 +8,8 @@ function Navbar() {
     const token = credentialResponse.credential;
 
     try {
-      const { default: jwtDecode } = await import('jwt-decode');
-      const decoded = jwtDecode(token);
-
+      const jwtDecode = (await import('jwt-decode')).default;  // dynamic import 사용
+      const decoded = jwtDecode(token);  // jwtDecode 함수 사용
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(decoded));
 

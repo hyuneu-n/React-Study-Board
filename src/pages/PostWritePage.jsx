@@ -1,18 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect  } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import TextInput from "../components/TextInput";
 import Button from "../ui/Button";
-import { addPost, updatePost } from "../store";
 
 function PostWritePage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { category: initialCategory } = useParams();
+  const { category: initialCategory } = useParams(); 
   const location = useLocation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState(initialCategory || "thread");
+  const [category, setCategory] = useState(initialCategory || "thread"); 
   const [isEditing, setIsEditing] = useState(false);
   const [postId, setPostId] = useState(null);
 
@@ -37,30 +34,30 @@ function PostWritePage() {
   const savePost = () => {
     const currentDate = new Date().toLocaleDateString();
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+    const user = JSON.parse(localStorage.getItem("user")); // 사용자 정보 가져오기
 
     if (isEditing) {
-      const updatedPost = {
-        id: postId,
-        title,
-        content,
-        category,
-        date: currentDate,
-        comments: savedPosts.find((post) => post.id === postId).comments,
-      };
-      dispatch(updatePost(updatedPost));
+      const updatedPosts = savedPosts.map((post) =>
+        post.id === postId
+          ? { ...post, title, content, category, date: currentDate }
+          : post
+      );
+      localStorage.setItem("posts", JSON.stringify(updatedPosts));
     } else {
-      const newPost = {
-        id: Date.now(),
-        title,
-        content,
-        category,
-        date: currentDate,
-        comments: [],
+      const newPost = { 
+        id: Date.now(), 
+        title, 
+        content, 
+        category, 
+        date: currentDate, 
+        author: user.name || user.email, // 작성자 정보 추가
+        comments: [] 
       };
-      dispatch(addPost(newPost));
+      savedPosts.push(newPost);
+      localStorage.setItem("posts", JSON.stringify(savedPosts));
     }
 
-    navigate(`/${category}`);
+    navigate(`/${category}`); 
   };
 
   return (
