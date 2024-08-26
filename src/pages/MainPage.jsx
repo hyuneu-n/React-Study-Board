@@ -10,6 +10,8 @@ function MainPage() {
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
 
+  const [imageSrc, setImageSrc] = useState("/wow.png");
+
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
@@ -30,10 +32,16 @@ function MainPage() {
   return (
     <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
       <img
-        src="/wow.png"
+        src={imageSrc}
         alt="WOW"
-        style={{ cursor: "pointer", width: "150px", marginBottom: "20px" }}
+        style={{
+          cursor: "pointer",
+          width: "150px",
+          marginBottom: "20px",
+        }}
         onClick={handleShow}
+        onMouseEnter={() => setImageSrc("/wow2.png")}
+        onMouseLeave={() => setImageSrc("/wow.png")}
       />
       <div className="d-flex justify-content-center mt-3">
         <Button className="mx-2" variant="dark" onClick={() => navigate("/thread")}>
