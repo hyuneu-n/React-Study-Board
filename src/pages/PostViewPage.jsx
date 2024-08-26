@@ -13,9 +13,13 @@ function PostViewPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (token && storedUser) {
       setIsAuthenticated(true);
-      setUser(JSON.parse(localStorage.getItem("user")));
+      setUser(storedUser);
+    } else {
+      console.error("사용자 정보가 없습니다.");
     }
 
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
@@ -87,7 +91,7 @@ function PostViewPage() {
           <h3 style={{ fontWeight: "bold" }}>{post.title}</h3>
           <p>{post.content}</p>
           <p className="text-muted">{post.date}</p>
-          <p className="text-muted">작성자: {post.author}</p>
+          <p className="text-muted">작성자: {post.author}</p> {/* 작성자 이메일 표시 */}
           {user && user.email === post.author && (
             <div className="d-flex justify-content-end">
               <Button variant="warning" style={{ marginRight: "10px" }} onClick={() => navigate(`/post-write/${post.category}?edit=${postId}`)}>
