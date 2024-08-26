@@ -1,4 +1,4 @@
-import { useState, useEffect  } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import TextInput from "../components/TextInput";
 import Button from "../ui/Button";
@@ -51,6 +51,7 @@ function PostWritePage() {
         category, 
         date: currentDate, 
         author: user.name || user.email, // 작성자 정보 추가
+        authorEmail: user.email,  // 작성자 이메일 추가
         comments: [] 
       };
       savedPosts.push(newPost);
@@ -69,7 +70,7 @@ function PostWritePage() {
           className="form-select"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          disabled={isEditing}
+          disabled={isEditing} // 수정 모드일 때 게시판 선택 비활성화
         >
           <option value="thread">Thread</option>
           <option value="qna">QnA</option>

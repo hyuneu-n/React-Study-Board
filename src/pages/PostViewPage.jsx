@@ -9,11 +9,13 @@ function PostViewPage() {
   const [post, setPost] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
+      setUser(JSON.parse(localStorage.getItem("user")));
     }
 
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
@@ -30,13 +32,12 @@ function PostViewPage() {
 
     if (commentText.trim() === "") return;
 
-    const user = JSON.parse(localStorage.getItem("user")); // 사용자 정보 가져오기
-
     const newComment = {
       id: Date.now(),
       content: commentText,
       date: new Date().toLocaleString(),
       author: user.name || user.email, // 작성자 정보 추가
+      authorEmail: user.email,  // 작성자 이메일 추가
     };
 
     const updatedPost = {
@@ -58,7 +59,6 @@ function PostViewPage() {
     const updatedComments = post.comments.filter(comment => comment.id !== commentId);
     const updatedPost = { ...post, comments: updatedComments };
 
-    // 로컬 스토리지 업데이트
     const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
     const updatedPosts = savedPosts.map((p) =>
       p.id === updatedPost.id ? updatedPost : p
@@ -66,6 +66,14 @@ function PostViewPage() {
 
     localStorage.setItem("posts", JSON.stringify(updatedPosts));
     setPost(updatedPost);
+  };
+
+  const handleDeletePost = () => {
+    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+    const updatedPosts = savedPosts.filter((p) => p.id !== post.id);
+
+    localStorage.setItem("posts", JSON.stringify(updatedPosts));
+    navigate(-1);
   };
 
   if (!post) return <p>Loading...</p>;
@@ -80,7 +88,17 @@ function PostViewPage() {
           <h3 style={{ fontWeight: "bold" }}>{post.title}</h3>
           <p>{post.content}</p>
           <p className="text-muted">{post.date}</p>
-          <p className="text-muted">작성자: {post.author}</p> {/* 작성자 표시 */}
+          <p className="text-muted">작성자: {post.author}</p>
+          {user && user.email === post.authorEmail && (
+            <div className="d-flex justify-content-end">
+              <Button variant="warning" style={{ marginRight: "10px" }} onClick={() => navigate(`/post-write/${post.category}?edit=${postId}`)}>
+                수정하기
+              </Button>
+              <Button variant="danger" onClick={handleDeletePost}>
+                삭제하기
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <div className="mt-4">
