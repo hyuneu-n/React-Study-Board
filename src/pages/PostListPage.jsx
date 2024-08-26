@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Pagination } from "react-bootstrap";
 import { setSearchTerm } from "../store";
+import PropTypes from 'prop-types';
 
 function PostListPage({ category }) {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ function PostListPage({ category }) {
 
   const handleSearchChange = (e) => {
     dispatch(setSearchTerm(e.target.value));
-    setCurrentPage(1);
+    setCurrentPage(1); // 검색 시 페이지를 첫 페이지로 초기화
   };
 
   return (
@@ -76,6 +76,7 @@ function PostListPage({ category }) {
   );
 }
 
+// PropTypes를 추가하여 category prop의 타입을 검증합니다.
 PostListPage.propTypes = {
   category: PropTypes.string.isRequired,
 };

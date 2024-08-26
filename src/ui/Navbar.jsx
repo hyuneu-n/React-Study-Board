@@ -1,32 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
 
 function Navbar() {
-  const navigate = useNavigate();
-
-  const handleLoginSuccess = async (credentialResponse) => {
-    const token = credentialResponse.credential;
-
-    try {
-      const jwtDecode = (await import('jwt-decode')).default;  // dynamic import 사용
-      const decoded = jwtDecode(token);  // jwtDecode 함수 사용
-      localStorage.setItem("user", JSON.stringify({
-        email: decoded.email,
-      }));
-
-      console.log("구글 로그인 성공:", decoded);
-
-      navigate("/thread");
-    } catch (error) {
-      console.error("JWT 디코딩 중 오류 발생:", error);
-    }
-  };
-
-  const handleLoginFailure = (error) => {
-    console.log("구글 로그인 실패:", error);
-    alert("로그인에 실패했습니다. 다시 시도해 주세요.");
-  };
-
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
@@ -43,8 +18,8 @@ function Navbar() {
           <ul className="navbar-nav ml-auto">
             <li className="nav-item">
               <GoogleLogin
-                onSuccess={handleLoginSuccess}
-                onError={handleLoginFailure}
+                onSuccess={(response) => console.log("구글 로그인 성공", response)}
+                onError={() => console.log("구글 로그인 실패")}
               />
             </li>
           </ul>
