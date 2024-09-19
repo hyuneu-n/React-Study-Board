@@ -1,27 +1,31 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import { Button, Pagination, Modal, Form } from "react-bootstrap";
-import { setSearchTerm } from "../store";
+import { fetchPosts, createPost } from "../data/api"; // API 호출 함수들
 import PropTypes from 'prop-types';
 
 function PostListPage({ category }) {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const posts = useSelector((state) =>
-    state.posts.items.filter(
-      (post) =>
-        post.category === category &&
-        (post.title.includes(state.posts.searchTerm) ||
-          post.content.includes(state.posts.searchTerm))
-    )
-  );
-  const searchTerm = useSelector((state) => state.posts.searchTerm);
+  const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const postsPerPage = 5;
+
+  // 여기에서 fetchPosts 함수 호출
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const data = await fetchPosts(category);  // API에서 가져온 fetchPosts 함수 사용
+        setPosts(data);
+      } catch (error) {
+        console.error('게시글 불러오기 오류:', error);
+      }
+    };
+  
+    loadPosts();  // API에서 fetchPosts 호출
+  }, [category]); // category가 변경될 때마다 호출
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -30,35 +34,21 @@ function PostListPage({ category }) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleSearchChange = (e) => {
-    dispatch(setSearchTerm(e.target.value));
-    setCurrentPage(1);
-  };
-
-  const handleSave = () => {
-    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
+  const handleSave = async () => {
     const newPost = {
-      id: Date.now(),
       title,
       content,
       category,
       date: new Date().toLocaleDateString(),
-      comments: [],
     };
-    savedPosts.unshift(newPost);
-    localStorage.setItem("posts", JSON.stringify(savedPosts));
-    setShowModal(false);
-
-    // 카테고리 페이지로 이동 후 새로고침
-    navigate(`/${category}`, { replace: true });
-    window.location.reload();
+    try {
+      await createPost(newPost);
+      setShowModal(false);
+      window.location.reload();  // 새로고침하여 리스트 업데이트
+    } catch (error) {
+      console.error("게시글 작성 실패:", error);
+    }
   };
-
-  useEffect(() => {
-    // 페이지가 처음 로드될 때 새로고침하여 최신 데이터를 가져옴
-    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
-    dispatch({ type: 'posts/setItems', payload: savedPosts });
-  }, [dispatch]);
 
   return (
     <div className="container mt-4">
@@ -68,19 +58,12 @@ function PostListPage({ category }) {
           Post
         </Button>
       </div>
-      <input
-        type="text"
-        placeholder="검색어를 입력하세요..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="form-control mb-3"
-      />
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width: '10%' }}>#</th>
-            <th style={{ width: '70%' }}>제목</th>
-            <th style={{ width: '20%' }}>날짜</th>
+            <th>#</th>
+            <th>제목</th>
+            <th>날짜</th>
           </tr>
         </thead>
         <tbody>
@@ -88,9 +71,7 @@ function PostListPage({ category }) {
             <tr
               key={post.id}
               onClick={() => navigate(`/post/${post.id}`)}
-              style={{
-                cursor: 'pointer',
-              }}
+              style={{ cursor: 'pointer' }}
             >
               <td>{indexOfFirstPost + index + 1}</td>
               <td>{post.title}</td>

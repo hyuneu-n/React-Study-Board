@@ -6,20 +6,17 @@ import PostViewPage from './pages/PostViewPage';
 import Navbar from './ui/Navbar';
 import Footer from './ui/Footer';
 import PostListPage from './pages/PostListPage';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import { store } from './store';
 
 function App() {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID; // 환경 변수에서 클라이언트 ID 가져오기
-
   return (
-    <GoogleOAuthProvider clientId={clientId}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <RouterWrapper />
-        </BrowserRouter>
-      </Provider>
-    </GoogleOAuthProvider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <RouterWrapper />
+      </BrowserRouter>
+    </Provider>
   );
 }
 
@@ -40,6 +37,8 @@ function RouterWrapper() {
           <Route path="qna" element={<PostListPage category="qna" />} />
           <Route path="post-write/:category" element={<PostWritePage />} />
           <Route path="post/:postId" element={<PostViewPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </div>
       <Footer />

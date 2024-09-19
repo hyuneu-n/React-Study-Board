@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import TextInput from "../components/TextInput";
 import Button from "../ui/Button";
-import { addPost, updatePost } from "../store";
+import { createPost, updatePost } from "../data/api"; // API 함수 import
 
 function PostWritePage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { category: initialCategory } = useParams();
   const location = useLocation();
   const [title, setTitle] = useState("");
@@ -16,6 +14,7 @@ function PostWritePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [postId, setPostId] = useState(null);
 
+  // 기존에 작성된 글을 수정하는 경우, 해당 글의 정보를 불러옴
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const editPostId = queryParams.get("edit");
@@ -34,33 +33,35 @@ function PostWritePage() {
     }
   }, [location.search]);
 
-  const savePost = () => {
+  const savePost = async () => {
     const currentDate = new Date().toLocaleDateString();
-    const savedPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-    if (isEditing) {
-      const updatedPost = {
-        id: postId,
-        title,
-        content,
-        category,
-        date: currentDate,
-        comments: savedPosts.find((post) => post.id === postId).comments,
-      };
-      dispatch(updatePost(updatedPost));
-    } else {
-      const newPost = {
-        id: Date.now(),
-        title,
-        content,
-        category,
-        date: currentDate,
-        comments: [],
-      };
-      dispatch(addPost(newPost));
+    try {
+      if (isEditing) {
+        // 수정 시
+        const updatedPost = {
+          id: postId,
+          title,
+          content,
+          category,
+          date: currentDate,
+        };
+        await updatePost(postId, updatedPost); // API 호출로 수정
+      } else {
+        // 새 글 작성 시
+        const newPost = {
+          title,
+          content,
+          category,
+          date: currentDate,
+        };
+        await createPost(newPost); // API 호출로 작성
+      }
+      // 저장 또는 수정 후 해당 카테고리 목록 페이지로 리다이렉트
+      navigate(`/${category}`);
+    } catch (error) {
+      console.error("게시글 저장 실패:", error);
     }
-
-    navigate(`/${category}`);
   };
 
   return (
