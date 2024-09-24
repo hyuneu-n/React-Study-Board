@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -9,8 +9,18 @@ function MainPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
-
   const [imageSrc, setImageSrc] = useState("/wow.png");
+
+  // 로그인한 사용자 정보 상태 관리
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // localStorage에서 사용자 정보 불러오기
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
@@ -31,6 +41,12 @@ function MainPage() {
 
   return (
     <div className="d-flex flex-column align-items-center justify-content-center vh-100 bg-light">
+      {user ? (
+        <h5>{user.nickname}님 반갑습니다!</h5>
+      ) : (
+        <h5>게시글을 작성하려면 로그인이 필요합니다</h5>
+      )}
+
       <img
         src={imageSrc}
         alt="WOW"

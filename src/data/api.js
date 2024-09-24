@@ -1,10 +1,17 @@
 const API_BASE_URL = "http://localhost:8080/api"; // API의 기본 URL
 
+// 토큰 가져오기 함수 (localStorage에서 가져오기)
+const getToken = () => localStorage.getItem('token');
+
 // 전체 게시글 조회
 export const fetchPosts = async (category) => {
   try {
+    const token = getToken();
     const response = await fetch(`${API_BASE_URL}/posts?category=${category}`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // 토큰 추가
+      },
     });
 
     if (!response.ok) {
@@ -20,8 +27,12 @@ export const fetchPosts = async (category) => {
 // 특정 게시글 조회
 export const fetchPostById = async (id) => {
   try {
+    const token = getToken();
     const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // 토큰 추가
+      },
     });
 
     if (!response.ok) {
@@ -37,19 +48,25 @@ export const fetchPostById = async (id) => {
 // 게시글 작성
 export const createPost = async (postData) => {
   try {
+    const token = getToken();
+    console.log('Token used for creating post:', token); // 토큰 로그 추가
     const response = await fetch(`${API_BASE_URL}/posts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // 토큰 추가
+        'Cache-Control': 'no-cache', // 캐시 무효화 헤더 추가
       },
       body: JSON.stringify(postData),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to create post');
+      throw new Error(`Failed to create post. Status code: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('Post created successfully:', data); // 요청 성공 시 로그
+    return data;
   } catch (error) {
     console.error('Error creating post:', error);
   }
@@ -58,19 +75,25 @@ export const createPost = async (postData) => {
 // 게시글 수정
 export const updatePost = async (id, postData) => {
   try {
+    const token = getToken();
+    console.log('Token used for updating post:', token); // 토큰 로그 추가
     const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // 토큰 추가
+        'Cache-Control': 'no-cache', // 캐시 무효화 헤더 추가
       },
       body: JSON.stringify(postData),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to update post');
+      throw new Error(`Failed to update post. Status code: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('Post updated successfully:', data); // 요청 성공 시 로그
+    return data;
   } catch (error) {
     console.error('Error updating post:', error);
   }
@@ -79,15 +102,22 @@ export const updatePost = async (id, postData) => {
 // 게시글 삭제
 export const deletePost = async (id) => {
   try {
+    const token = getToken();
+    console.log('Token used for deleting post:', token); // 토큰 로그 추가
     const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`, // 토큰 추가
+        'Cache-Control': 'no-cache', // 캐시 무효화 헤더 추가
+      },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to delete post');
+      throw new Error(`Failed to delete post. Status code: ${response.status}`);
     }
 
-    return true; // 성공 시 true 반환
+    console.log('Post deleted successfully'); // 요청 성공 시 로그
+    return true;
   } catch (error) {
     console.error('Error deleting post:', error);
   }
@@ -129,7 +159,13 @@ export const loginUser = async (loginData) => {
       throw new Error('Failed to login');
     }
 
-    return await response.json(); // JSON 형식의 응답 받기
+    const data = await response.json();
+    
+    // 로그인 성공 시 토큰과 사용자 정보 (예: 닉네임 또는 아이디)를 localStorage에 저장
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify({ id: data.login_id, nickname: data.nickname }));
+
+    return data; // JSON 형식의 응답 받기
   } catch (error) {
     console.error('Error logging in:', error);
   }
