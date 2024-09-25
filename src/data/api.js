@@ -3,15 +3,11 @@ const API_BASE_URL = "http://localhost:8080/api"; // API의 기본 URL
 // 토큰 가져오기 함수 (localStorage에서 가져오기)
 const getToken = () => localStorage.getItem('token');
 
-// 전체 게시글 조회
-export const fetchPosts = async (category) => {
+// 전체 게시글 조회 (카테고리별)
+export const fetchPostsByCategory = async (category) => {
   try {
-    const token = getToken();
-    const response = await fetch(`${API_BASE_URL}/posts?category=${category}`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${category}`, {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`, // 토큰 추가
-      },
     });
 
     if (!response.ok) {
@@ -25,14 +21,10 @@ export const fetchPosts = async (category) => {
 };
 
 // 특정 게시글 조회
-export const fetchPostById = async (id) => {
+export const fetchPostById = async (category, id) => {
   try {
-    const token = getToken();
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${category}/${id}`, {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`, // 토큰 추가
-      },
     });
 
     if (!response.ok) {
@@ -45,17 +37,16 @@ export const fetchPostById = async (id) => {
   }
 };
 
-// 게시글 작성
 export const createPost = async (postData) => {
   try {
-    const token = getToken();
+    const token = getToken(); // 토큰을 localStorage에서 가져옴
     console.log('Token used for creating post:', token); // 토큰 로그 추가
+
     const response = await fetch(`${API_BASE_URL}/posts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // 토큰 추가
-        'Cache-Control': 'no-cache', // 캐시 무효화 헤더 추가
+        'Authorization': `Bearer ${token}`, // Authorization 헤더에 토큰 추가
       },
       body: JSON.stringify(postData),
     });
@@ -65,13 +56,12 @@ export const createPost = async (postData) => {
     }
 
     const data = await response.json();
-    console.log('Post created successfully:', data); // 요청 성공 시 로그
+    console.log('Post created successfully:', data); // 요청 성공 시 로그 확인
     return data;
   } catch (error) {
     console.error('Error creating post:', error);
   }
 };
-
 // 게시글 수정
 export const updatePost = async (id, postData) => {
   try {

@@ -32,12 +32,23 @@ function RouterWrapper() {
         }}
       >
         <Routes>
+          {/* 메인 페이지 */}
           <Route index element={<MainPage />} />
+          
+          {/* 카테고리별 게시글 목록 조회 */}
           <Route path="thread" element={<PostListPage category="thread" />} />
           <Route path="qna" element={<PostListPage category="qna" />} />
+          
+          {/* 게시글 작성 */}
           <Route path="post-write/:category" element={<PostWritePage />} />
-          <Route path="post/:postId" element={<PostViewPage />} />
+          
+          {/* 특정 게시글 조회 */}
+          <Route path=":category/post/:postId" element={<PostViewPage />} />
+          
+          {/* 로그인 페이지 */}
           <Route path="/login" element={<LoginPage />} />
+          
+          {/* 회원가입 페이지 */}
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </div>

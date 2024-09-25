@@ -1,65 +1,32 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "react-bootstrap";
-import { fetchPostById, deletePost } from "../data/api"; // API 호출 함수들
-import CommentList from "../components/CommentList";
+import { useParams } from "react-router-dom";
+import { fetchPostById } from "../data/api"; // 특정 게시글 조회 API 호출 함수
 
 function PostViewPage() {
-  const { postId } = useParams();
-  const navigate = useNavigate();
+  const { category, postId } = useParams();  // 카테고리와 게시글 ID 가져오기
   const [post, setPost] = useState(null);
-  const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const loadPost = async () => {
       try {
-        const data = await fetchPostById(postId);
+        const data = await fetchPostById(category, postId);  // 카테고리와 ID로 게시글 불러오기
         setPost(data);
       } catch (error) {
-        console.error("게시글 조회 오류:", error);
+        console.error('게시글 조회 오류:', error);
       }
     };
-    fetchPost();
-  }, [postId]);
 
-  const handleDelete = async () => {
-    try {
-      await deletePost(postId);
-      navigate(-1);
-    } catch (error) {
-      console.error("게시글 삭제 실패:", error);
-    }
-  };
+    loadPost();
+  }, [category, postId]);
 
   if (!post) return <p>Loading...</p>;
 
   return (
     <div className="container mt-4">
-      <Button className="mb-3" variant="secondary" onClick={() => navigate(-1)}>
-        뒤로 가기
-      </Button>
-      <div className="card">
-        <div className="card-body">
-          <h3>{post.title}</h3>
-          <p>{post.content}</p>
-          <p>{post.date}</p>
-          <Button variant="danger" onClick={handleDelete}>
-            삭제하기
-          </Button>
-        </div>
-      </div>
-      <div className="mt-4">
-        <h6>댓글</h6>
-        <input
-          type="text"
-          className="form-control mb-3"
-          placeholder="댓글을 입력하세요"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-        />
-        <Button variant="primary">댓글 작성하기</Button>
-      </div>
-      <CommentList comments={post.comments} />
+      <h3>{post.title}</h3>
+      <p>{post.content}</p>
+      <p>작성자: {post.author}</p>
+      <p>작성일: {post.createdAt}</p>
     </div>
   );
 }

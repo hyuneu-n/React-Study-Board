@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addPost } from "../store";
 import PostModal from "../components/PostModal";
+import { createPost } from "../data/api"; // 게시글 작성 API 함수 불러오기
 
 function MainPage() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ function MainPage() {
 
   useEffect(() => {
     // localStorage에서 사용자 정보 불러오기
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
     }
@@ -25,18 +26,26 @@ function MainPage() {
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  const handleSave = (post) => {
+  // 게시글 작성 후 저장하는 함수
+  const handleSave = async (post) => {
     const newPost = {
-      id: Date.now(),
       title: post.title,
       content: post.content,
       category: post.category,
-      date: new Date().toLocaleDateString(),
-      comments: [],
     };
-    dispatch(addPost(newPost));
-    handleClose();
-    navigate(`/${newPost.category}`);
+
+    try {
+      // API 호출을 통해 백엔드로 게시글 작성 요청 보내기
+      const savedPost = await createPost(newPost);
+      console.log("서버에 저장된 게시글:", savedPost); // 서버에서 응답받은 데이터 확인
+
+      // Redux에 게시글 추가 및 페이지 이동
+      dispatch(addPost(savedPost));
+      handleClose();
+      navigate(`/${newPost.category}`);
+    } catch (error) {
+      console.error("게시글 작성 중 오류 발생:", error);
+    }
   };
 
   return (
